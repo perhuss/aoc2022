@@ -34,7 +34,7 @@ class Day13Test : DayTest(Day13, 13, 5806, 140, 23600)
 class Day14Test : DayTest(Day14, 24, 1003, 93, 25771)
 class Day15Test : DayTest(Day15, null, 4861076, null, 10649103160102L)
 class Day16Test : DayTest(Day16, 1651, 1792, 1707, 2587) // slow
-class Day17Test : DayTest(Day17, 3068, 3232, null, null)
+class Day17Test : DayTest(Day17, 3068L, 3232L, 1514285714288L, 1585632183915L)
 class Day18Test : DayTest(Day18, 64, 3448, 58, 2052)
 
 val day10partTwoExample =
