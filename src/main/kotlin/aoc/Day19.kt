@@ -2,21 +2,14 @@ package aoc.d19
 
 import aoc.DaySolution
 import aoc.d19.Material.*
-import java.util.Comparator.naturalOrder
+import aoc.d19.Robot.GEODE_ROBOT
 
 object Day19 : DaySolution {
     override fun partOne(input: String) =
         input.toBlueprints().sumOf { it.quality() * it.number }
     override fun partTwo(input: String) =
-        input.toBlueprints().take(3).parallelStream().map { it.qualityParallel() }.reduce(Int::times).get()
+        input.toBlueprints().take(3).map { it.quality(minutes = 32) }.reduce(Int::times)
 }
-
-fun Blueprint.qualityParallel() =
-    Robot.values().filterNot(GEODE::equals).toList()
-        .parallelStream()
-        .map { quality(it, Resources(), 32, Robot.values().toList()) }
-        .max(naturalOrder())
-        .get()
 
 fun Blueprint.quality(
     resources: Resources = Resources(),
@@ -26,18 +19,19 @@ fun Blueprint.quality(
     when {
         minutes == 0 -> resources.materials.geodes
         minutes == 1 -> resources.yield().materials.geodes
-        targets.size == 1 -> quality(targets.first(), resources, minutes, targets)
+        resources.containsAll(costFor(GEODE_ROBOT)) -> quality(GEODE_ROBOT, resources, minutes, targets)
         else -> {
             val newTargets = targets.filter { resources.robots[it] < maxRobots[it] }
             newTargets.maxOf { quality(it, resources, minutes, newTargets) }
         }
     }
 
-tailrec fun Blueprint.quality(nextRobot: Robot, resources: Resources, minutes: Int, targets: List<Robot>): Int = when {
-    minutes == 1 -> resources.yield().materials.geodes
-    resources.materials.containsAll(costFor(nextRobot)) -> quality(build(nextRobot, resources.yield()), minutes - 1, targets)
-    else -> quality(nextRobot, resources.yield(), minutes - 1, targets)
-}
+tailrec fun Blueprint.quality(nextRobot: Robot, resources: Resources, minutes: Int, targets: List<Robot>): Int =
+    when {
+        minutes == 1 -> resources.yield().materials.geodes
+        resources.containsAll(costFor(nextRobot)) -> quality(build(nextRobot, resources.yield()), minutes - 1, targets)
+        else -> quality(nextRobot, resources.yield(), minutes - 1, targets)
+    }
 
 fun Blueprint.build(robot: Robot, resources: Resources) =
     Resources(resources.robots + robot, resources.materials - costFor(robot))
@@ -63,12 +57,17 @@ fun Sequence<Pair<Material, Int>>.toMaterials() = with(toMap()) {
 
 data class Blueprint(val number: Int, val robotCosts: Map<Robot, Materials>) {
     val maxRobots =
-        Robots(robotCosts.values.map(Materials::quantities).plus(intArrayOf(0, 0, 0, Int.MAX_VALUE)).reduce(IntArray::max))
+        Robots(
+            robotCosts.values.map(Materials::quantities)
+                .plus(intArrayOf(0, 0, 0, Int.MAX_VALUE))
+                .reduce(IntArray::max)
+        )
     fun costFor(robot: Robot) = robotCosts.getValue(robot)
 }
 
 data class Resources(val robots: Robots = Robots(), val materials: Materials = Materials()) {
     fun yield() = copy(materials = Materials(materials.quantities + robots.quantities))
+    fun containsAll(other: Materials) = materials.containsAll(other)
 }
 
 infix operator fun IntArray.plus(other: IntArray) = IntArray(4) { this[it] + other[it] }
