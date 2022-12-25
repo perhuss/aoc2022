@@ -17,6 +17,7 @@ import aoc.d14.Day14
 import aoc.d15.Day15
 import aoc.d16.Day16
 import aoc.d17.Day17
+import aoc.d19.Day19
 
 class Day01Test : DayTest(Day01, 24000, 66186, 45000, 196804)
 class Day02Test : DayTest(Day02, 15, 8392, 12, 10116)
@@ -36,6 +37,7 @@ class Day15Test : DayTest(Day15, null, 4861076, null, 10649103160102L)
 class Day16Test : DayTest(Day16, 1651, 1792, 1707, 2587) // slow
 class Day17Test : DayTest(Day17, 3068L, 3232L, 1514285714288L, 1585632183915L)
 class Day18Test : DayTest(Day18, 64, 3448, 58, 2052)
+class Day19Test : DayTest(Day19, 33, 1346, 3472, 7644)
 
 val day10partTwoExample =
     listOf(
