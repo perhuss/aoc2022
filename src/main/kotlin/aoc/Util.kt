@@ -14,6 +14,6 @@ fun <T: Any> Sequence<T>.splitBy(predicate: (T) -> Boolean): Sequence<List<T>> =
     }
 
 interface DaySolution {
-    fun partOne(input: String): Any = throw NotImplementedError()
-    fun partTwo(input: String): Any = throw NotImplementedError()
+    fun partOne(input: String): Any? = throw NotImplementedError()
+    fun partTwo(input: String): Any? = throw NotImplementedError()
 }
