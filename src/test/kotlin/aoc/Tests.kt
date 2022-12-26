@@ -38,6 +38,7 @@ class Day16Test : DayTest(Day16, 1651, 1792, 1707, 2587) // slow
 class Day17Test : DayTest(Day17, 3068L, 3232L, 1514285714288L, 1585632183915L)
 class Day18Test : DayTest(Day18, 64, 3448, 58, 2052)
 class Day19Test : DayTest(Day19, 33, 1346, 3472, 7644)
+class Day20Test : DayTest(Day20, 3L, 9866L, 1623178306L, 12374299815791L)
 
 val day10partTwoExample =
     listOf(
