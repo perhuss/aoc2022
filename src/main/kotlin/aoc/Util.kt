@@ -1,19 +1,18 @@
 package aoc
 
-fun <T: Comparable<T>> Sequence<T>.greatest(n: Int) = sortedDescending().take(n)
-
-val <T> ((T) -> Boolean).negated : (T) -> Boolean get() = { !invoke(it) }
-
-fun <T: Any> Sequence<T>.splitBy(predicate: (T) -> Boolean): Sequence<List<T>> =
-    sequence {
-        with(iterator()) {
-            while(hasNext()) {
-                yield(asSequence().takeWhile(predicate.negated).toList())
-            }
-        }
-    }
-
 interface DaySolution {
     fun partOne(input: String): Any? = throw NotImplementedError()
     fun partTwo(input: String): Any? = throw NotImplementedError()
+}
+
+fun <T> String.mapPositionedNotNull(transform: (Pos, Char) -> T?): List<T> =
+    lines().flatMapIndexed { row, line -> line.mapIndexedNotNull { col, char -> transform(Pos(row, col), char) } }
+
+fun String.withPosition(): List<PositionedValue<Char>> =
+    lines().flatMapIndexed { row, line -> line.mapIndexed { col, char -> PositionedValue(Pos(row, col), char) } }
+
+data class PositionedValue<T>(val pos: Pos, val value: T)
+
+data class Pos(val row: Int, val col: Int) {
+    infix operator fun plus(o: Pos) = Pos(row + o.row, col + o.col)
 }

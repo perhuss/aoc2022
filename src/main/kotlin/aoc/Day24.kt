@@ -1,30 +1,28 @@
-package aoc
+package aoc.d24
 
-import aoc.Dir.*
+import aoc.DaySolution
+import aoc.Pos
+import aoc.d24.Dir.*
+import aoc.mapPositionedNotNull
 
 object Day24 : DaySolution {
     override fun partOne(input: String) = input.toValley().runToExit().time
     override fun partTwo(input: String) = input.toValley().runToExitWithSnacks().time
 }
 
-fun String.toValley() =
-    lines()
-        .flatMapIndexed { row, line -> line.mapIndexedNotNull { col, char -> parseBlizzard(row, col, char) } }
-        .let(::Valley)
-
+fun String.toValley() = mapPositionedNotNull(::parseBlizzard).let(::Valley)
 fun Valley.runToExit() = generateSequence(this, Valley::next).first(Valley::expeditionReachedExit)
 fun Valley.runToExitWithSnacks() = generateSequence(this) { it.runToExit().flip() }.elementAt(3)
 
 val Valley.expeditionReachedExit: Boolean get() = exit in possiblePositions
-
 fun Valley.flip() = copy(entrance = exit, exit = entrance, possiblePositions = setOf(exit))
 
-fun parseBlizzard(row: Int, col: Int, char: Char) =
+fun parseBlizzard(pos: Pos, char: Char) =
     when(char) {
-        '<' -> Blizzard(Pos(row, col), WEST)
-        '>' -> Blizzard(Pos(row, col), EAST)
-        '^' -> Blizzard(Pos(row, col), NORTH)
-        'v' -> Blizzard(Pos(row, col), SOUTH)
+        '<' -> Blizzard(pos, WEST)
+        '>' -> Blizzard(pos, EAST)
+        '^' -> Blizzard(pos, NORTH)
+        'v' -> Blizzard(pos, SOUTH)
         else -> null
     }
 
@@ -32,7 +30,7 @@ fun Valley.next(): Valley {
     val nextBlizzards = blizzards.map { it.next(limits) }
     val nextPossiblePositions =
         possiblePositions
-            .flatMap { Dir.values().map(it::plus) + it }
+            .flatMap { values().map(it::plus) + it }
             .filterNot(nextBlizzards.map(Blizzard::pos).toSet()::contains)
             .filter(::isValidPos)
             .toSet()
@@ -64,10 +62,7 @@ data class Limits(val min: Pos = Pos(1, 1), val max: Pos) {
     operator fun contains(element: Pos) = element.row in min.row..max.row && element.col in min.col..max.col
 }
 
-data class Pos(val row: Int, val col: Int) {
-    infix operator fun plus(dir: Dir) = this + dir.delta
-    infix operator fun plus(o: Pos) = Pos(row + o.row, col + o.col)
-}
+infix operator fun Pos.plus(dir: Dir) = this + dir.delta
 
 enum class Dir(val delta: Pos) {
     NORTH(Pos(-1, 0)),

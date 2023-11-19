@@ -23,6 +23,7 @@ import aoc.d20.Day20
 import aoc.d21.Day21
 import aoc.d22.Day22
 import aoc.d23.Day23
+import aoc.d24.Day24
 
 class Day01Test : DayTest(Day01, 24000, 66186, 45000, 196804)
 class Day02Test : DayTest(Day02, 15, 8392, 12, 10116)

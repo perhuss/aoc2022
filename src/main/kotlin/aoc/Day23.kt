@@ -1,7 +1,9 @@
 package aoc.d23
 
 import aoc.DaySolution
+import aoc.Pos
 import aoc.d23.Dir.*
+import aoc.mapPositionedNotNull
 
 object Day23 : DaySolution {
     override fun partOne(input: String) =
@@ -26,28 +28,19 @@ fun Grove.proposeMove(elf: Pos): Pos? =
     if(elf.adjacents.none(elves::contains)) null
     else propositions.firstOrNull { it.test(this, elf) }?.propose(elf)
 
-fun String.toElves() =
-    lines()
-        .flatMapIndexed { row, line -> line.mapIndexedNotNull { col, char -> Pos(row, col).takeIf { char == '#' } } }
-        .toSet()
-        .let(::Grove)
+fun String.toElves() = mapPositionedNotNull { pos, c -> pos.takeIf { c == '#' } }.toSet().let(::Grove)
 
 fun <T> List<T>.rotate() = List(size) { get((it + 1) % size) }
 fun List<Int>.range() = min()..max()
 
-data class Grove(val elves: Set<Pos>, val propositions: List<Proposition> = Proposition.values().toList())
+data class Grove(val elves: Set<Pos>, val propositions: List<Dir> = preferredDirections)
+val preferredDirections = listOf(N, S, W, E)
 
-data class Pos(val row: Int, val col: Int) {
-    infix operator fun plus(dir: Dir) = this + dir.delta
-    infix operator fun plus(o: Pos) = Pos(row + o.row, col + o.col)
-    val adjacents: List<Pos> get() = Dir.values().map(this::plus)
-}
+infix operator fun Pos.plus(dir: Dir) = this + dir.delta
+val Pos.adjacents: List<Pos> get() = values().map(this::plus)
 
-enum class Proposition(val dir: Dir) {
-    NORTH(N), SOUTH(S), WEST(W), EAST(E);
-    fun test(grove: Grove, elf: Pos) = listOf(elf + dir, elf + dir.left, elf + dir.right).none(grove.elves::contains)
-    fun propose(elf: Pos) = elf + dir
-}
+fun Dir.test(grove: Grove, elf: Pos) = listOf(elf + this, elf + this.left, elf + this.right).none(grove.elves::contains)
+fun Dir.propose(elf: Pos) = elf + this
 
 enum class Dir(val delta: Pos) {
     N(Pos(-1, 0)),
