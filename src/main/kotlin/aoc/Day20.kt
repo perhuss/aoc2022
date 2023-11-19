@@ -1,4 +1,6 @@
-package aoc
+package aoc.d20
+
+import aoc.DaySolution
 
 object Day20 : DaySolution {
     override fun partOne(input: String) = input.toEncryptedFile().mix().coords()

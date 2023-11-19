@@ -1,4 +1,6 @@
-package aoc
+package aoc.d18
+
+import aoc.DaySolution
 
 object Day18 : DaySolution {
     override fun partOne(input: String) = input.toCubeSet().numberOfVisibleFaces()
